@@ -58,3 +58,7 @@ Our residual network is borrowed from *Deep Residual Learning for Image Recognit
 |Global Average Pooling | 64 | - | -|
 |Fully Connected Layer | Number of Classes|-|-|
 
+# Use
+1. Download datasets for public targets https://www.sdms.afrl.af.mil/index.php?collection=mstar&page=targets and mixed targets https://www.sdms.afrl.af.mil/index.php?collection=mstar&page=mixed.
+2. Run readmstar.py. Use main3 for the mixed targets dataset and main1 for the public targets dataset. Change the filepath to point to the location of the data on your system.
+3. Run mstar_network_tensorflow.py. Change the output filepath to point to the desired output location.
