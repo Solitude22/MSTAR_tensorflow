@@ -242,8 +242,7 @@ def main3(filename, outputfile):
 	f.close()
 
 def main4(filename, outputfile):
-	data, labels, serNums = readMSTARDir(os.path.join(filename,'data'))
-	unique_info = np.unique(labels, return_counts=True, return_index=True)
+	data, labels, _ = readMSTARDir(os.path.join(filename,'data'))
 
 	X_train, X_test, y_train, y_test = train_test_split(data.T, labels, test_size=0.2)
 	

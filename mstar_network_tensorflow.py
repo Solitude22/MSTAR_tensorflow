@@ -10,7 +10,6 @@ The Aerospace Corporation
 """
 
 import tensorflow as tf
-import tflearn
 import numpy as np
 from data import DataHandler
 from tensorflow.keras import layers, models
@@ -24,7 +23,7 @@ Implementation of mstartnet using Tensorflow.
 
 mstarnet is a basic conv-net in mstar_network.py. Here a similarly structured but deeper network is used.
 """
-def mstarnet(x, classes):
+def mstarnet(classes):
 	model = models.Sequential()
 	model.add(layers.Conv2D(32, (3,3), activation='relu', input_shape=(128, 128, 1), padding='same'))
 	model.add(layers.MaxPooling2D())
@@ -48,38 +47,16 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 
 	classes = data_handler.num_labels
 
-	img_prep = tflearn.ImagePreprocessing()
-	img_prep.add_featurewise_zero_center()
-	img_prep.add_featurewise_stdnorm()
-
-	img_aug = tflearn.ImageAugmentation()
-	img_aug.add_random_flip_leftright()
-	img_aug.add_random_rotation(max_angle=25)
-
-	x = tflearn.input_data(shape=[None, 128, 128, 1], dtype='float', data_preprocessing=img_prep,
-						   data_augmentation=img_aug)
-
 	X, Y = data_handler.get_all_train_data()
-
-	X, Y = tflearn.data_utils.shuffle(X, Y)
 	X = X[:,:128*128]
 	X = X.reshape([-1,128,128,1])
-	
-	Y = tflearn.data_utils.to_categorical(Y,classes)
+	Y = np.reshape(Y, (-1,1))
 
 	X_test, Y_test = data_handler.get_test_data()
 	X_test = X_test[:,:128*128]
 	X_test = X_test.reshape([-1,128,128,1])
 
-	"""
-	Tensorflow expects a different labeling format
-	Tensorflow: (X,1), 2nd dimension is the label starting with 0
-	tfleanr: (X,num_classes), 2nd dimension is array of zeros with 1 at the index of the assigned label
-	"""
-	Y_new = np.zeros((Y.shape[0], 1))
-	for dim in range(Y.shape[1]):
-		Y_new[Y[:,dim]==1,:] = dim
-	Y = Y_new
+	# Y_test needs to be change (n,1)
 	Y_test_new = np.zeros((Y_test.shape[0], 1))
 	for dim in range(Y_test.shape[1]):
 		Y_test_new[Y_test[:,dim]==1,:] = dim
@@ -89,7 +66,7 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 	Below is new code for Tensorflow model
 	"""
 	# create network
-	model = mstarnet(x, classes)
+	model = mstarnet(classes)
 
 	# create training model
 	model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
@@ -162,7 +139,7 @@ if __name__ == '__main__':
 
 	""" Change to desired save location """
 	# file to save trained model to
-	modelSave = "models/mstar_targets/mstarnet/mstar_targets_model.h5"
+	modelSave = "models/mstar_targets/mstarnet/temp.h5"
 
 	""" Change for mixed targets vs public targets dataset """
 	# string labels for the targets for creating the confusion matrix.
