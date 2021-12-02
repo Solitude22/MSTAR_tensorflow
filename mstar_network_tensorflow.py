@@ -6,10 +6,11 @@ import tflearn
 import numpy as np
 from data import DataHandler
 #from network_defs import *
-import time
-import os
 from tensorflow.keras import datasets, layers, models
-
+from tensorflow.keras.models import load_model
+from matplotlib import pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
 def example_net(x, classes):
 	network = tflearn.conv_2d(x, 32, 3, activation='relu')
@@ -38,21 +39,13 @@ def trythisnet(x, classes):
 	return network
 
 """
-Implementation of mstartnet using Tensorflow
+Implementation of mstartnet using Tensorflow.
+
+mstarnet is a basic conv-net in mstar_network.py. Here a similarly structured but deeper network is used.
 
 """
 def mstarnet(x, classes):
 	model = models.Sequential()
-	# model.add(layers.Conv2D(18, (9,9), activation='relu', input_shape=(128,128,1)))
-	# model.add(layers.MaxPooling2D((6,6)))
-	# model.add(layers.Conv2D(36, (5,5), activation='relu'))
-	# model.add(layers.MaxPooling2D((4,4)))
-	# model.add(layers.Conv2D(120, (4,4), activation='relu'))
-
-	# model.add(layers.Dropout(0.2))
-	# model.add(layers.Flatten())
-	# model.add(layers.Dense(120, activation='softmax'))
-	# model.add(layers.Dense(classes))
 	model.add(layers.Conv2D(32, (3,3), activation='relu', input_shape=(128, 128, 1), padding='same'))
 	model.add(layers.MaxPooling2D())
 	model.add(layers.Conv2D(64, (3,3), activation='relu', padding='same'))
@@ -86,7 +79,7 @@ def resnet1(x, classes, n = 5):
 
 	return net
 
-def train_nn_tflearn(data_handler,modelSave,num_epochs=50):
+def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 
 	#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
 	#tflearn.init_graph(gpu_memory_fraction=0.5)
@@ -184,35 +177,48 @@ def train_nn_tflearn(data_handler,modelSave,num_epochs=50):
 	# evaluate
 	model.evaluate(X_test, Y_test, verbose=2)
 
-	"""
-	Commented out all the tflearn stuff below, it isn't needed
-	"""
-	# model.save("model.h5")
-	# print(np.shape(X))
-	# print(np.shape(Y))
-	# print(network)
+	"""Display the visualization of the training accuracy/loss, validation accuracy/loss and confusion matrix."""
+	# summarize history for accuracy
+	plt.figure()
+	plt.plot(history.history['acc'])
+	plt.plot(history.history['val_acc'])
+	plt.title('Model Accuracy')
+	plt.ylabel('Accuracy')
+	plt.xlabel('Epoch')
+	plt.legend(['Train', 'Validation'], loc='lower right')
+	# summarize history for loss
+	plt.figure()
+	plt.plot(history.history['loss'])
+	plt.plot(history.history['val_loss'])
+	plt.title('Model Loss')
+	plt.ylabel('Loss')
+	plt.xlabel('Epoch')
+	plt.legend(['Train', 'Validation'], loc='upper right')
 
-	# if not os.path.exists('/tmp/tflearn/checkpoints'):
-	# 	os.makedirs('/tmp/tflearn/checkpoints')
+	# confusion matrix
+	plt.figure()
+	model = load_model(modelSave)
+	y_pred = np.argmax(model.predict(X_test), axis=-1)
+	cf_matrix = confusion_matrix(Y_test, y_pred, normalize='true')
 
-	# model = tflearn.DNN(network,tensorboard_verbose=3,checkpoint_path='/tmp/tflearn/checkpoints/',best_checkpoint_path='best/',best_val_accuracy=0.90)
-	# model.fit(X, Y, n_epoch=num_epochs, shuffle=True, validation_set=(X_test, Y_test),
-	# 		  show_metric=True, batch_size=data_handler.mini_batch_size, run_id='mstar_cnn')
-	# model.save("models/mstar_targets/mstarnet/my_model.tflearn")
+	ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues', fmt='.5g')
+
+	ax.set_title('Confusion Matrix\n\n')
+	ax.set_xlabel('\nPredicted Values')
+	ax.set_ylabel('Actual Values ')
+
+	ax.xaxis.set_ticklabels(targets)
+	ax.yaxis.set_ticklabels(targets)
+	plt.show()
 
 if __name__ == '__main__':
-	import sys
-
-	# bl = sys.argv[1]
-	# nb = int(sys.argv[2])
-	# mbs = int(sys.argv[3])
-	# nep = int(sys.argv[4])
 	bl = "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output"
 	nb = 1
 	mbs = 32
 	nep = 20
-	modelSave = "models/mstar_targets/mstarnet/temp.h5"
+	modelSave = "models/mstar_targets/mstarnet/mstar_targets_model.h5"
+	# targets = ['2S1', 'BRDM2', 'BTR60', 'D7', 'T62', 'ZIL131', 'ZSU23/4']
+	targets = ['BMP2', 'BTR70', 'T72']
 
 	handler = DataHandler(bl,nb,mbs)
-	#train_nn(0,handler)
-	train_nn_tflearn(handler,modelSave,nep)
+	train_nn_tflearn(handler,modelSave,targets,nep)
