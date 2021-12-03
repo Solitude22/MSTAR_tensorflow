@@ -2,7 +2,7 @@ MSTAR Tensorflow
 
 Synthetic Aperture Radar (SAR) object recognition is an important problem for automatic target recognition and aerial reconnaissance in military applications. We propose to use a deep convolutional neural network to classify and extract useful features of target chips taken from SAR image scenes. We will use the publically available Moving and Stationary Target Acquisition and Recognition (MSTAR) database as our dataset to evaluate our network.
 
-![MSTAR image](mstar_image.png "Sample MSTAR image")
+![MSTAR image](pictures/mstar_image.png "Sample MSTAR image")
 
 # Introduction
 
@@ -21,44 +21,59 @@ We will explore a few number of different convolutional network configurations a
 
 Synthetic Aperture Radar (SAR) is a form of radar that uses the motion of an antenna over a distance to create a large "synthetic" antenna aperture, so that it can provide much finer resolution images than standard radar.
 
-<img src="Synthetic_Aperture_Radar.jpg" width="256">
+<img src="pictures/Synthetic_Aperture_Radar.jpg" width="256">
 
 The MSTAR dataset is a collection of SAR images gathered from 1995-1997. The two subsets we are interested in are the MSTAR Public Targets, that contains three classes of vehicles, and the MSTAR/IU Mixed Targets, that contains 10 classes of vehicles.
 
 The images are target chips taken from scenes of SAR images, each chip is 128 by 128 pixels and contains magnitude data and phase data in the form of floating point numbers. For our purposes we only consider the magnitude data.
 
-![MSTAR Targets](mstar_targets.png)
+![MSTAR Targets](pictures/mstar_targets.png)
 [//]: # (Automatic target classification of man-made objects in synthetic aperture radar images using Gabor wavelet and neural network Perumal Vasuki S. Mohamed Mansoor Roomi)
 
 ## Convolutional Networks
 
 There are lots of tutorials on convolutional networks. Google them.
 
-## Residual Networks
-
-Residual networks are a recent evolution of convolutional networks that have allowed much deeper networks than conventional convolutional networks. For example, in the paper *Deep Residual Learning for Image Recognition* [He, Zhang, Ren, Sun 2015] they used an ensemble of 6 residual networks, each having up to 152 layers, to achieve a 3.57% top-5 error rate in ILSVRC 2015.
-
-In a residual network, we have what are called residual blocks, a pair of layers where the input of the first layer is added to the output of the second layer. The mapping is similar to learning $F(x) = H(x) - x$, where $H(x)$ is the original function we wish to learn. The authors of the Deep Residual Learning paper hypothesize that it is easier for a network to learn this residual than to optimize the original function.
-
-![Residual Block](residual_building_block.png "Residual Block")
-
 # Network
 
-Our residual network is borrowed from *Deep Residual Learning for Image Recognition* [He, Zhang, Ren, Sun 2015]. It is a 32 layer residual network with the following configuration:
+The network used is a 5-conv CNN with 3x3 filter quantity starting at 32 for the 1st convolutional layer and increasing by a factor of 2 up to 512 on for the 5th convolutional layer.
+Each convolutional layer is followed by a 2x2 maxpool.
+A dropout layer with factor 0.2 is used to help reduce overfitting.
+Two dense layers reduce the data from size 8192 -> 256, then from 256 -> n, where n is the number of classes (either 3 or 7).
 
-|Layer Type | Output Size | Filters | Kernel Size|
-|---|---|---|---|
-|Input Layer | 128 $\times$ 128 | - | -|
-|Convolutional Layer | 128 $\times$ 128 | 16 | 3 $\times$ 3|
-|Residual Block Size 5 | 128 $\times$ 128 | 16 | 3 $\times$ 3|
-|Residual Block Size 1 | 64 $\times$ 64 | 32 | 3 $\times$ 3|
-|Residual Block Size 4 | 64 $\times$ 64 | 32 | 3 $\times$ 3|
-|Residual Block Size 1 | 32 $\times$ 32 | 64 | 3 $\times$ 3|
-|Residual Block Size 4 | 32 $\times$ 32 | 64 | 3 $\times$ 3|
-|Global Average Pooling | 64 | - | -|
-|Fully Connected Layer | Number of Classes|-|-|
+<img src="pictures/mstar_network.PNG">
 
-# Use
-1. Download datasets for public targets https://www.sdms.afrl.af.mil/index.php?collection=mstar&page=targets and mixed targets https://www.sdms.afrl.af.mil/index.php?collection=mstar&page=mixed.
-2. Run readmstar.py. Use main3 for the mixed targets dataset and main1 for the public targets dataset. Change the filepath to point to the location of the data on your system.
-3. Run mstar_network_tensorflow.py. Change the output filepath to point to the desired output location.
+# Use Guide
+
+## Requirements
+Python 3.x
+Python packages in requirements.txt
+(GPU may not be needed, but I cannot guarantee the code will work as is, or at all without one)
+CUDA Enabled GPU. See full listing of compatible GPUs [here](https://developer.nvidia.com/cuda-gpus#compute). Only NVIDIA GPUs support CUDA.
+NVIDIA GPU driver version >= 450.80.02
+[CUDA toolkit v11.2](https://developer.nvidia.com/cuda-11.2.0-download-archive)
+[NVIDIA cuDNN SDK 8.1](https://developer.nvidia.com/cudnn)
+Minimum 16 GB of RAM
+
+I have had inconsistent experiences with setting up for GPU use in Python, try and Google around if you have problems.
+This is a helpful resource https://www.tensorflow.org/install/gpu.
+If things are set up correctly, TensorFlow will automatically detect your GPU when the code is run and use it.
+A collection of tests to check if TensorFlow is detecting the GPU: https://www.codegrepper.com/code-examples/python/check+if+tensorflow+is+using+gpu
+## Setup and run steps
+1. Download datasets for [public targets](https://www.sdms.afrl.af.mil/content/public-data/s3_scripts/index.php?file=MSTAR-PublicTargetChips-T72-BMP2-BTR70-SLICY.zip) and mixed targets ([part 1](https://www.sdms.afrl.af.mil/content/public-data/s3_scripts/index.php?file=MSTAR-PublicMixedTargets-CD1.zip) and [part 2](https://www.sdms.afrl.af.mil/content/public-data/s3_scripts/index.php?file=MSTAR-PublicMixedTargets-CD2.zip)). You will need to create an account to download.
+2. Extract these folders somewhere on your system (for example, inside this repository)
+3. Create a folder called "data" inside the public targets data directory.
+4. Cut and paste the contents of MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY\TARGETS\TEST\15_DEG and MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY\TARGETS\TRAIN\17_DEG into the data folder. The structure should look like this:
+
+<img src="pictures/public_targets_folders.PNG">
+
+5. Combine the contents of Part 1 and Part 2 downloaded for the mixed targets dataset into a single folder. Override any conflicts.
+6. Create a folder called "data" inside the combined mixed targets data directory.
+7. Cut and paste the contents of all of the *_DEG folders into the data folder. The structure should look like this:
+
+<img src="pictures/mixed_targets_folders.PNG">
+
+8. Run readmstar.py as a script. See in-line comments for configuration prior to doing so.
+9. Run mstar_network_tensorflow.py as a script. See in-line commnets for configuration prior to doing so.
+
+Sample results and ready-to-use trained models are included under the models/ folder.
