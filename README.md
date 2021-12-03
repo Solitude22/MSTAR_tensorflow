@@ -84,7 +84,7 @@ A collection of tests to check if TensorFlow is detecting the GPU: https://www.c
 <img src="pictures/all_targets_folders.PNG">
 
 11. Clean up any unused empty folders.
-12. Run readmstar.py as a script. This will load and parse the MSTAR into large arrays and dump them into output files for later use in model training. See in-line comments for configuration prior to doing so.
-13. Run mstar_network_tensorflow.py as a script. This will load the data saved by readmstar.py and train and save locally a TensorFlow model for classification. See in-line commnets for configuration prior to doing so.
+12. Run readmstar.py as a script. This will load and parse the MSTAR data into large arrays and dump them into output files for later use in model training. See in-line comments in __main__ for configuration prior to doing so.
+13. Run mstar_network_tensorflow.py as a script. This will load the data saved by readmstar.py and train and save locally a TensorFlow model for classification. See in-line commnets in __main__ for configuration prior to doing so.
 
 Sample results and ready-to-use trained models for both the public targets and mixed targets datasets are included under the models/ folder.

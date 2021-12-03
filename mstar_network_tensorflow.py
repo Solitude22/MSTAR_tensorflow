@@ -141,7 +141,7 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 	plt.show()
 
 """
-Make modifcations here.
+Entry point for mstar_network_tensorflow.py. Make modifcations here.
 """
 if __name__ == '__main__':
 	""" Change to point to the output folder location produced by readmstar.py """

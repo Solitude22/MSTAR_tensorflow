@@ -1,9 +1,23 @@
+"""
+Reads the MSTAR data, labels it, and splits into training and testing sets for model training.
+
+Code is majority courtesy of https://github.com/hamza-latif/MSTAR_tensorflow/blob/master/mstar_network.py
+"""
+
 import numpy as np
 import pickle
 import os
 from fnmatch import fnmatch
 from sklearn.model_selection import train_test_split
 
+"""
+Reads a single MSTAR data file.
+
+Input:
+	filename -> file name of the data file to read
+Output:
+	2D image array, target label, and serial number
+"""
 def readMSTARFile(filename):
 	f = open(filename, 'rb')
 	a = ''
@@ -44,6 +58,14 @@ def readMSTARFile(filename):
 
 	return data.astype('float32'), label, targetSerNum
 
+"""
+Reads the MSTAR data, calls readMSTARFile for each individual file.
+
+Inputs:
+	dirname -> directory containing the MSTAR data
+Outputs:
+	stacked array of MSTAR images, array of image labels, and array of serial numbers
+"""
 def readMSTARDir(dirname):
 	data = np.zeros([128*128,0],dtype = 'float32')
 	labels = []
@@ -71,6 +93,15 @@ def readMSTARDir(dirname):
 
 	return data, labels, serNums
 
+"""
+Reads MSTAR data and dumps into local files.
+
+Inputs:
+	filename -> MSTAR data directory
+	outputfile -> output data directory
+Outputs:
+	none explicitly, but labeled training and testing data are saved into local files
+"""
 def main(filename, outputfile):
 	data, labels, _ = readMSTARDir(os.path.join(filename,'data'))
 
@@ -120,7 +151,11 @@ def main(filename, outputfile):
 
 	f.close()
 
+"""
+Entry point for readmstar.py. Make modifcations here.
+"""
 if __name__ == '__main__':
+	""" Change function call to include the data directory as the first parameter, and output directory as the second parameter """
 	#main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_MIXED_TARGETS_BOTH", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
 	#main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
 	main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_ALL_TARGETS", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
