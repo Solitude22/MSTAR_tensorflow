@@ -1,16 +1,10 @@
 import numpy as np
 import pickle
-import sys
 import os
 from fnmatch import fnmatch
-import random
 from sklearn.model_selection import train_test_split
 
 def readMSTARFile(filename):
-# raw_input('Enter the mstar file to read: ')
-
-	#print filename
-
 	f = open(filename, 'rb')
 	a = ''
 
@@ -26,16 +20,6 @@ def readMSTARFile(filename):
 		a = f.readline().decode('utf-8')
 
 	data = np.fromfile(f, dtype='>f4')
-
-	# print data.shape
-
-	# magdata = data[:128*128]
-	# phasedata = data[128*128:]
-
-	# if you want to print an image
-	# imdata = magdata*255
-
-	# imdata = imdata.astype('uint8')
 
 	targetSerNum = '-'
 
@@ -87,161 +71,7 @@ def readMSTARDir(dirname):
 
 	return data, labels, serNums
 
-# def main1():
-	# if len(sys.argv) < 3:
-	# 	sys.exit()
-
-	# filename = sys.argv[1]
-	# outputfile = sys.argv[2]
-def main1(filename, outputfile):
-	data, labels, serNums = readMSTARDir(os.path.join(filename,'TRAIN'))
-
-	mstar_dic_train = dict()
-
-	mstar_dic_train['data'] = data
-	mstar_dic_train['labels'] = labels
-	mstar_dic_train['serial numbers'] = serNums
-
-	data, labels, serNums = readMSTARDir(os.path.join(filename,'TEST'))
-
-	mstar_dic_test = dict()
-
-	mstar_dic_test['data'] = data
-	mstar_dic_test['labels'] = labels
-	mstar_dic_test['serial numbers'] = serNums
-
-	labels = list(set(labels))
-
-	label_dict = dict()
-
-	for i in range(len(labels)):
-		label_dict[labels[i]] = i
-
-	for i in range(len(mstar_dic_train['labels'])):
-		mstar_dic_train['labels'][i] = label_dict[mstar_dic_train['labels'][i]]
-
-	for i in range(len(mstar_dic_test['labels'])):
-		mstar_dic_test['labels'][i] = label_dict[mstar_dic_test['labels'][i]]
-
-
-	f = open(os.path.join(outputfile,'data_batch_1'),'wb')
-	pickle.dump(mstar_dic_train,f)
-
-	f.close()
-
-	f = open(os.path.join(outputfile,'test_batch'),'wb')
-	pickle.dump(mstar_dic_test,f)
-
-	f.close()
-
-	meta_dic = dict()
-
-	meta_dic['num_cases_per_batch'] = len(mstar_dic_train['labels'])
-	meta_dic['label_names'] = labels
-
-	f = open(os.path.join(outputfile,'batches.meta'),'wb')
-	pickle.dump(meta_dic,f)
-
-	f.close()
-
-# def main2():
-# 	if len(sys.argv) < 3:
-# 		sys.exit()
-
-# 	filename = sys.argv[1]
-# 	outputfile = sys.argv[2]
-def main2(filename, outputfile):
-	data, labels, serNums = readMSTARDir(filename)
-
-	mstar_dic_train = dict()
-
-	mstar_dic_train['data'] = data
-	mstar_dic_train['labels'] = labels
-	mstar_dic_train['serial numbers'] = serNums
-
-	labels = list(set(labels))
-
-	label_dict = dict()
-
-	for i in range(len(labels)):
-		label_dict[labels[i]] = i
-
-	for i in range(len(mstar_dic_train['labels'])):
-		mstar_dic_train['labels'][i] = label_dict[mstar_dic_train['labels'][i]]
-
-	f = open(os.path.join(outputfile,'data_batch_1'),'wb')
-	pickle.dump(mstar_dic_train,f)
-
-	f.close()
-
-	meta_dic = dict()
-
-	meta_dic['num_cases_per_batch'] = len(mstar_dic_train['labels'])
-	meta_dic['label_names'] = labels
-
-	f = open(os.path.join(outputfile,'batches.meta'),'wb')
-	pickle.dump(meta_dic,f)
-
-	f.close()
-
-# def main3():
-	# if len(sys.argv) < 3:
-	# 	sys.exit()
-
-	# filename = sys.argv[1]
-	# outputfile = sys.argv[2]
-def main3(filename, outputfile):
-	data, labels, serNums = readMSTARDir(os.path.join(filename,'17_DEG'))
-
-	mstar_dic_train = dict()
-
-	mstar_dic_train['data'] = data
-	mstar_dic_train['labels'] = labels
-	mstar_dic_train['serial numbers'] = serNums
-
-	data, labels, serNums = readMSTARDir(os.path.join(filename,'15_DEG'))
-
-	mstar_dic_test = dict()
-
-	mstar_dic_test['data'] = data
-	mstar_dic_test['labels'] = labels
-	mstar_dic_test['serial numbers'] = serNums
-
-	labels = sorted(list(set(labels)))
-
-	label_dict = dict()
-
-	for i in range(len(labels)):
-		label_dict[labels[i]] = i
-
-	for i in range(len(mstar_dic_train['labels'])):
-		mstar_dic_train['labels'][i] = label_dict[mstar_dic_train['labels'][i]]
-
-	for i in range(len(mstar_dic_test['labels'])):
-		mstar_dic_test['labels'][i] = label_dict[mstar_dic_test['labels'][i]]
-
-
-	f = open(os.path.join(outputfile,'data_batch_1'),'wb')
-	pickle.dump(mstar_dic_train,f)
-
-	f.close()
-
-	f = open(os.path.join(outputfile,'test_batch'),'wb')
-	pickle.dump(mstar_dic_test,f)
-
-	f.close()
-
-	meta_dic = dict()
-
-	meta_dic['num_cases_per_batch'] = len(mstar_dic_train['labels'])
-	meta_dic['label_names'] = labels
-
-	f = open(os.path.join(outputfile,'batches.meta'),'wb')
-	pickle.dump(meta_dic,f)
-
-	f.close()
-
-def main4(filename, outputfile):
+def main(filename, outputfile):
 	data, labels, _ = readMSTARDir(os.path.join(filename,'data'))
 
 	X_train, X_test, y_train, y_test = train_test_split(data.T, labels, test_size=0.2)
@@ -291,10 +121,5 @@ def main4(filename, outputfile):
 	f.close()
 
 if __name__ == '__main__':
-	#main3()
-	# main3("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_MIXED_TARGETS_BOTH", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
-	#main2("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_MIXED_TARGETS_BOTH", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
-	#main1("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY\TARGETS", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
-	#main4("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_MIXED_TARGETS_BOTH", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
-	main4("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
-# print phoenix_header
+	#main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_MIXED_TARGETS_BOTH", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
+	main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
