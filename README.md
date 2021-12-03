@@ -46,14 +46,16 @@ Two dense layers reduce the data from size 8192 -> 256, then from 256 -> n, wher
 # Use Guide
 
 ## Requirements
-Python 3.x
-Python packages in requirements.txt
+- Python 3.x
+- Python packages in requirements.txt
+
 (GPU may not be needed, but I cannot guarantee the code will work as is, or at all without one)
-CUDA Enabled GPU. See full listing of compatible GPUs [here](https://developer.nvidia.com/cuda-gpus#compute). Only NVIDIA GPUs support CUDA.
-NVIDIA GPU driver version >= 450.80.02
-[CUDA toolkit v11.2](https://developer.nvidia.com/cuda-11.2.0-download-archive)
-[NVIDIA cuDNN SDK 8.1](https://developer.nvidia.com/cudnn)
-Minimum 16 GB of RAM
+
+- CUDA Enabled GPU. See full listing of compatible GPUs [here](https://developer.nvidia.com/cuda-gpus#compute). Only NVIDIA GPUs support CUDA.
+- NVIDIA GPU driver version >= 450.80.02
+- [CUDA toolkit v11.2](https://developer.nvidia.com/cuda-11.2.0-download-archive)
+- [NVIDIA cuDNN SDK 8.1](https://developer.nvidia.com/cudnn)
+- Minimum 16 GB of RAM
 
 I have had inconsistent experiences with setting up for GPU use in Python, try and Google around if you have problems.
 This is a helpful resource https://www.tensorflow.org/install/gpu.
