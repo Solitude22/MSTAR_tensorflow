@@ -122,4 +122,5 @@ def main(filename, outputfile):
 
 if __name__ == '__main__':
 	#main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_MIXED_TARGETS_BOTH", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
-	main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
+	#main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_PUBLIC_TARGETS_CHIPS_T72_BMP2_BTR70_SLICY", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")
+	main("D:\My Documents\Work\Aerospace\MSTAR_tensorflow\MSTAR_ALL_TARGETS", "D:\My Documents\Work\Aerospace\MSTAR_tensorflow\output")

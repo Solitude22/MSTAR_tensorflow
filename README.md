@@ -45,6 +45,8 @@ Two dense layers reduce the data from size 8192 -> 256, then from 256 -> n, wher
 
 # Use Guide
 
+For reference, this is the original repo from which this repo was forked, before modifications were made.
+https://github.com/hamza-latif/MSTAR_tensorflow
 ## Requirements
 - Python 3.x
 - Python packages in requirements.txt
@@ -75,7 +77,14 @@ A collection of tests to check if TensorFlow is detecting the GPU: https://www.c
 
 <img src="pictures/mixed_targets_folders.PNG">
 
-8. Run readmstar.py as a script. See in-line comments for configuration prior to doing so.
-9. Run mstar_network_tensorflow.py as a script. See in-line commnets for configuration prior to doing so.
+8. It is also possible to combine the two datasets to create a larger one with more classes (the public targets dataset has 3 classes, while the mixed targets dataset has 7). Create a folder named "MSTAR_ALL_TARGETS" and a folder named "data" inside it.
+9. Copy and paste the contents of the data folder from the public targets dataset into the data folder under the MSTAR_ALL_TARGETS folder.
+10. Copy and paste the contents of the COL1/SCENE1 and COL2/SCENE1-3 into the data folder under the MSTAR_ALL_TARGETS folder. Override any conflicts. The structure should look like this (note the presence of the "data" folder on the first line):
 
-Sample results and ready-to-use trained models are included under the models/ folder.
+<img src="pictures/all_targets_folders.PNG">
+
+11. Clean up any unused empty folders.
+12. Run readmstar.py as a script. This will load and parse the MSTAR into large arrays and dump them into output files for later use in model training. See in-line comments for configuration prior to doing so.
+13. Run mstar_network_tensorflow.py as a script. This will load the data saved by readmstar.py and train and save locally a TensorFlow model for classification. See in-line commnets for configuration prior to doing so.
+
+Sample results and ready-to-use trained models for both the public targets and mixed targets datasets are included under the models/ folder.

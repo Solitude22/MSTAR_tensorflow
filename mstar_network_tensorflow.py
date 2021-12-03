@@ -93,7 +93,7 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 	model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
 
 	# set checkpoint to save the best model
-	checkpoint = tf.keras.callbacks.ModelCheckpoint(modelSave, save_best_only=True, mode='max', verbose=1, monitor='val_acc')
+	checkpoint = tf.keras.callbacks.ModelCheckpoint(modelSave, save_best_only=True, mode='max', verbose=1, monitor='val_accuracy')
 
 	# see architecture summary of the model
 	model.summary()
@@ -107,8 +107,8 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 	"""Display the visualization of the training accuracy/loss, validation accuracy/loss and confusion matrix."""
 	# summarize history for accuracy
 	plt.figure()
-	plt.plot(history.history['acc'])
-	plt.plot(history.history['val_acc'])
+	plt.plot(history.history['accuracy'])
+	plt.plot(history.history['val_accuracy'])
 	plt.title('Model Accuracy')
 	plt.ylabel('Accuracy')
 	plt.xlabel('Epoch')
@@ -130,14 +130,14 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 	cf_matrix = confusion_matrix(Y_test, y_pred, normalize='true')
 
 	# display confusion matrix nicely formatted as a heatmap with the seaborn library
-	ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues', fmt='.5g')
+	ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues', fmt='.3g')
 	ax.set_title('Confusion Matrix\n\n')
 	ax.set_xlabel('\nPredicted Values')
 	ax.set_ylabel('Actual Values ')
 	ax.xaxis.set_ticklabels(targets)
 	ax.yaxis.set_ticklabels(targets)
 
-	# show all the plots
+	# show all the plots. Close all the plots to gracefully stop the program.
 	plt.show()
 
 """
@@ -159,13 +159,16 @@ if __name__ == '__main__':
 
 	""" Change to desired save location """
 	# file to save trained model to
-	modelSave = "models/mstar_targets/mstarnet/temp.h5"
+	# modelSave = "models/mstar_public_targets/mstarnet/mstar_public_targets_model.h5"
+	# modelSave = "models/mstar_mixed_targets/mstarnet/mstar_mixed_targets_model.h5"
+	modelSave = "models/mstar_all_targets/mstarnet/mstar_all_targets_model.h5"
 
 	""" Change for mixed targets vs public targets dataset """
 	# string labels for the targets for creating the confusion matrix.
 	# Needs to match the order used by readmstar (alphabetical), or the confusion matrix will mislabel rows/columns.
 	# targets = ['2S1', 'BRDM2', 'BTR60', 'D7', 'T62', 'ZIL131', 'ZSU23/4'] # for mixed targets dataset
-	targets = ['BMP2', 'BTR70', 'T72'] # for public targets dataset
+	# targets = ['BMP2', 'BTR70', 'T72'] # for public targets dataset
+	targets = ['2S1', 'BMP2', 'BRDM2', 'BTR60', 'BTR70', 'D7', 'T62', 'T72', 'ZIL131', 'ZSU23/4'] # for all targets dataset
 
 	# call DataHandler to read the data
 	handler = DataHandler(data_folder,num_batch_files,mini_batch_size)
