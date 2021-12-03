@@ -1,12 +1,13 @@
 """
 Trimmed version of mstar_network.py from the original repo.
+https://github.com/hamza-latif/MSTAR_tensorflow
 
 mstarnet has been replaced with a deeper CNN with 5 convolution layers. This model has been used 
 in the past on other projects and has proven to be a high performing model without high complexity.
 
 Alan Kittel
 The Aerospace Corporation
-12/2/21
+12/3/21
 """
 
 import tensorflow as tf
@@ -20,8 +21,13 @@ from sklearn.metrics import confusion_matrix
 
 """
 Implementation of mstartnet using Tensorflow.
-
 mstarnet is a basic conv-net in mstar_network.py. Here a similarly structured but deeper network is used.
+msarnet is a sequential convolutional network (CNN) with 5 convolutional layers and a dropout layer.
+
+Input:
+	classes -> integer for the number of classes in the dataset
+Output:
+	constructed TensorFlow model ready for training
 """
 def mstarnet(classes):
 	model = models.Sequential()
@@ -43,20 +49,35 @@ def mstarnet(classes):
 	
 	return model
 
+"""
+Trains a CNN model to classify images from the MSTAR dataset.
+
+Input:
+	data_handler -> DataHandler object containing the MSTAR data
+	modelSave -> filepath for saving the TensorFlow model
+	targets -> string array of target names in alphabetical order
+	num_epochs -> number of training epochs, default is 50
+Output:
+	none explicitly, but TensorFlow model is saved to specified location
+	and accuracy, loss, and confusion matrix plots are displayed.
+	At user discretion, plots may be manually saved from the pop-up windows.
+"""
 def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 
 	classes = data_handler.num_labels
 
+	# call data_handler function to get training data and reshape it
 	X, Y = data_handler.get_all_train_data()
 	X = X[:,:128*128]
 	X = X.reshape([-1,128,128,1])
 	Y = np.reshape(Y, (-1,1))
 
+	# call data_handler function to get testing data and reshape it
 	X_test, Y_test = data_handler.get_test_data()
 	X_test = X_test[:,:128*128]
 	X_test = X_test.reshape([-1,128,128,1])
-
-	# Y_test needs to be change (n,1)
+	# data handler's get_test_data returns the label array in a different format than
+	# get_all_train_data, these next few lines are for reshaping it
 	Y_test_new = np.zeros((Y_test.shape[0], 1))
 	for dim in range(Y_test.shape[1]):
 		Y_test_new[Y_test[:,dim]==1,:] = dim
@@ -102,18 +123,17 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 	plt.xlabel('Epoch')
 	plt.legend(['Train', 'Validation'], loc='upper right')
 
-	# confusion matrix
+	# compute confusion matrix
 	plt.figure()
 	model = load_model(modelSave)
 	y_pred = np.argmax(model.predict(X_test), axis=-1)
 	cf_matrix = confusion_matrix(Y_test, y_pred, normalize='true')
 
+	# display confusion matrix nicely formatted as a heatmap with the seaborn library
 	ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues', fmt='.5g')
-
 	ax.set_title('Confusion Matrix\n\n')
 	ax.set_xlabel('\nPredicted Values')
 	ax.set_ylabel('Actual Values ')
-
 	ax.xaxis.set_ticklabels(targets)
 	ax.yaxis.set_ticklabels(targets)
 
