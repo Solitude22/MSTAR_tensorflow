@@ -83,6 +83,12 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 		Y_test_new[Y_test[:,dim]==1,:] = dim
 	Y_test = Y_test_new
 
+	Y_validation = Y_test[int(len(Y_test) / 3):]
+	X_validation = X_test[int(len(X_test) / 3):]
+
+	Y_test = Y_test[:int(len(Y_test) / 3)]
+	X_test = X_test[:int(len(X_test) / 3)]
+
 	"""
 	Below is new code for Tensorflow model
 	"""
@@ -99,10 +105,7 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 	model.summary()
 
 	# train model
-	history = model.fit(X, Y, epochs=num_epochs, validation_data=(X_test, Y_test), callbacks=[checkpoint])
-
-	# evaluate
-	model.evaluate(X_test, Y_test, verbose=2)
+	history = model.fit(X, Y, epochs=num_epochs, validation_data=(X_validation, Y_validation), callbacks=[checkpoint])
 
 	"""Display the visualization of the training accuracy/loss, validation accuracy/loss and confusion matrix."""
 	# summarize history for accuracy
@@ -126,6 +129,7 @@ def train_nn_tflearn(data_handler,modelSave,targets,num_epochs=50):
 	# compute confusion matrix
 	plt.figure()
 	model = load_model(modelSave)
+	print(model.evaluate(X_test, Y_test, verbose=2))
 	y_pred = np.argmax(model.predict(X_test), axis=-1)
 	cf_matrix = confusion_matrix(Y_test, y_pred, normalize='true')
 

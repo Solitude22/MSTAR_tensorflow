@@ -105,7 +105,7 @@ Outputs:
 def main(filename, outputfile):
 	data, labels, _ = readMSTARDir(os.path.join(filename,'data'))
 
-	X_train, X_test, y_train, y_test = train_test_split(data.T, labels, test_size=0.2)
+	X_train, X_test, y_train, y_test = train_test_split(data.T, labels, test_size=0.3)
 	
 	mstar_dic_train = dict()
 
